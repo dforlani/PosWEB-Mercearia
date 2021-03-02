@@ -15,10 +15,12 @@ import org.springframework.util.ResourceUtils;
 
 import br.com.dforlani.mercearia.models.Cidade;
 import br.com.dforlani.mercearia.models.Departamento;
+import br.com.dforlani.mercearia.models.Pedido;
 import br.com.dforlani.mercearia.models.Pessoa;
 import br.com.dforlani.mercearia.models.Produto;
 import br.com.dforlani.mercearia.repositorios.CidadeRepositorio;
 import br.com.dforlani.mercearia.repositorios.DepartamentoRepositorio;
+import br.com.dforlani.mercearia.repositorios.PedidoRepositorio;
 import br.com.dforlani.mercearia.repositorios.PessoaRepositorio;
 import br.com.dforlani.mercearia.repositorios.ProdutoRepositorio;
 
@@ -35,6 +37,8 @@ public class PopulacaoInicialBanco implements CommandLineRunner {
 	private DepartamentoRepositorio departamentoRepo;
 	@Autowired
 	private ProdutoRepositorio produtoRep;
+	@Autowired
+	private PedidoRepositorio pedidoRep;
 	
 	@Override
 	public void run(String... args) throws Exception {
@@ -95,6 +99,23 @@ public class PopulacaoInicialBanco implements CommandLineRunner {
 		produtoRep.save(prodAux);
 		produtoRep.flush();
 		
+
+		//INCLUSÃO AUTOMÁTICA DE PEDIDOS 
+		Pedido pedido = new Pedido(LocalDate.of(1990, 12, 1));
+		// pedido.setItens(produtoRep.findAll());
+		pedidoRep.save(pedido);
+
+		pedido = new Pedido(LocalDate.of(2020, 2, 4));
+		// pedido.setItens(produtoRep.findAll());
+		pedidoRep.save(pedido);
+
+		pedido = new Pedido(LocalDate.of(2018, 4, 5));
+		// pedido.setItens(produtoRep.findAll());
+		pedidoRep.save(pedido);
+
+		// pedidoRep.flush();
+
+
 
 	}
 }

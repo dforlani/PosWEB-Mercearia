@@ -1,5 +1,8 @@
 package br.com.dforlani.mercearia.controllers;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -11,67 +14,105 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import br.com.dforlani.mercearia.models.Produto;
+import br.com.dforlani.mercearia.dtos.AutoCompleteDTO;
+import br.com.dforlani.mercearia.models.Pedido;
+import br.com.dforlani.mercearia.models.PedidoItem;
+import br.com.dforlani.mercearia.models.Pessoa;
 import br.com.dforlani.mercearia.repositorios.PedidoRepositorio;
+import br.com.dforlani.mercearia.repositorios.PessoaRepositorio;
 
 
 @Controller
 public class PedidosController {
 	
 	private PedidoRepositorio pedidoRepositorio;
+	private PessoaRepositorio pessoaRepositorio;
+
+	private List<Pessoa> pessoasFiltrados = new ArrayList<>();
 
 		
-	public PedidosController(PedidoRepositorio pedidoRepositorio) {
+	public PedidosController(PedidoRepositorio pedidoRepositorio, PessoaRepositorio pessoaRepositorio) {
         this.pedidoRepositorio = pedidoRepositorio;
+		this.pessoaRepositorio = pessoaRepositorio;
 		
 	}
 	
-	@GetMapping("/produtos")
-	public String produtos(Model model) {
-		model.addAttribute("listaProdutos", pedidoRepositorio.findAll());
-		return "produtos/index";
+	@GetMapping("/pedidos")
+	public String pedidos(Model model) {
+		model.addAttribute("listaPedidos", pedidoRepositorio.findAll());
+		model.addAttribute("pedido", new Pedido());
+		return "pedidos/index";
 	}
 	
-	@GetMapping("/produtos/novo")
+	@GetMapping("/pedidos/novo")
 	public String novo(Model model) {
 		
-		model.addAttribute("produto", new Produto());
+		model.addAttribute("pedido", new Pedido(LocalDate.now()));
 		
-		return "produtos/form";
+		
+		return "pedidos/form";
 	}
 	
-	@GetMapping("/produtos/{id}")
+	@GetMapping("/pedidos/{id}")
 	public String alterar(@PathVariable("id") long id, Model model) {
-		Optional<Produto> produtoOpt = pedidoRepositorio.findById(id);
-		if (produtoOpt.isEmpty()) {
-			throw new IllegalArgumentException("Produto inválido.");
+		Optional<Pedido> pedidoOpt = pedidoRepositorio.findById(id);
+		if (pedidoOpt.isEmpty()) {
+			throw new IllegalArgumentException("Pedido inválido.");
 		}
 		
-		model.addAttribute("produto", produtoOpt.get());
+		model.addAttribute("pedido", pedidoOpt.get());
+		model.addAttribute("pedidoItem", new PedidoItem());
 		
-		return "produtos/form";
+		return "pedidos/form";
 	}
 	
-	@PostMapping("/produtos/salvar")
-	public String salvar(@Valid @ModelAttribute("produto") Produto produto, BindingResult bindingResult, Model model) {
+	@PostMapping("/pedidos/salvar")
+	public String salvar(@Valid @ModelAttribute("pedido") Pedido pedido, BindingResult bindingResult, Model model) {
 		if (bindingResult.hasErrors()) {
-			return "produtos/form";
+			return "pedidos/index";
 		}
 		
-		pedidoRepositorio.save(produto);
-		return "redirect:/produtos";
+		pedidoRepositorio.save(pedido);
+		model.addAttribute("pedido", pedido);
+		model.addAttribute("pedidoItem", new PedidoItem(pedido));
+		return "pedidos/form";
 	}
 	
-	@GetMapping("/produtos/excluir/{id}")
+	@GetMapping("/pedidos/excluir/{id}")
 	public String excluir(@PathVariable("id") long id) {
-		Optional<Produto> produtoOpt = pedidoRepositorio.findById(id);
-		if (produtoOpt.isEmpty()) {
-			throw new IllegalArgumentException("Produto inválido.");
+		Optional<Pedido> pedidoOpt = pedidoRepositorio.findById(id);
+		if (pedidoOpt.isEmpty()) {
+			throw new IllegalArgumentException("Pedido inválido.");
 		}
 		
-		pedidoRepositorio.delete(produtoOpt.get());
-		return "redirect:/produtos";
+		pedidoRepositorio.delete(pedidoOpt.get());
+		return "redirect:/pedidos";
+	}
+
+	@RequestMapping("/pedidos/pessoasNomeAutoComplete")
+	@ResponseBody
+	public List<AutoCompleteDTO> pessoasNomeAutoComplete(@RequestParam(value="term", required = false, defaultValue="") String term) {
+		List<AutoCompleteDTO> sugestoes = new ArrayList<>();
+		try {
+			if (term.length() >= 2) {
+				pessoasFiltrados = pessoaRepositorio.searchByNome(term);
+			}
+			
+			for (Pessoa pessoa : pessoasFiltrados) {
+				if (pessoa.getNome().toLowerCase().contains(term.toLowerCase())) {
+					sugestoes.add(new AutoCompleteDTO(pessoa.getNome(), Long.toString(pessoa.getId())));	
+				}
+			}
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return sugestoes;
 	}
 	
 }

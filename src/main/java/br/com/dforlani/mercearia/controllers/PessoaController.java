@@ -115,7 +115,7 @@ public class PessoaController {
 	public List<AutoCompleteDTO> departamentosNomeAutoComplete(@RequestParam(value="term", required = false, defaultValue="") String term) {
 		List<AutoCompleteDTO> sugestoes = new ArrayList<>();
 		try {
-			if (term.length() >= 3) {
+			if (term.length() >= 1) {
 				departamentosFiltrados = departamentoRepo.searchByNome(term);
 			}
 			

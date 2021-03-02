@@ -1,12 +1,24 @@
 package br.com.dforlani.mercearia.models;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,17 +31,25 @@ public class Pedido {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate data;
 
-    @Column(nullable = false)
-    private Double valor_venda;
+    @ManyToOne
+    private Pessoa pessoa;
+
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "pedido_item",
+        joinColumns = @JoinColumn(name = "pedido_id"),
+        inverseJoinColumns =  @JoinColumn(name = "produto_id")
+    )
+    private List<Produto> itens = new ArrayList<>();
 
     @Deprecated
     public Pedido() {
 
     }
 
-    public Pedido(LocalDate data, Double valor_venda) {
+    public Pedido(LocalDate data) {
         this.data = data;
-        this.valor_venda = valor_venda;
+   
     }
 
     public Long getId() {
@@ -48,13 +68,6 @@ public class Pedido {
         this.data = data;
     }
 
-    public Double getValor_venda() {
-        return valor_venda;
-    }
-
-    public void setValor_venda(Double valor_venda) {
-        this.valor_venda = valor_venda;
-    }
 
     @Override
     public int hashCode() {
@@ -79,6 +92,29 @@ public class Pedido {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+
+    public Pessoa getPessoa() {
+        return pessoa;
+    }
+
+    public void setPessoa(Pessoa pessoa) {
+        this.pessoa = pessoa;
+    }
+
+    public String getNomePessoa() {
+		if (pessoa != null) {
+			return pessoa.getNome();
+		}
+		return "";
+	}
+
+    public List<Produto> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<Produto> itens) {
+        this.itens = itens;
     }
 
 }
