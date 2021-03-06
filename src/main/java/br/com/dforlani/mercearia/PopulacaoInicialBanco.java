@@ -1,7 +1,9 @@
 package br.com.dforlani.mercearia;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.transaction.Transactional;
 
@@ -16,10 +18,12 @@ import org.springframework.util.ResourceUtils;
 import br.com.dforlani.mercearia.models.Cidade;
 import br.com.dforlani.mercearia.models.Departamento;
 import br.com.dforlani.mercearia.models.Pedido;
+import br.com.dforlani.mercearia.models.PedidoItem;
 import br.com.dforlani.mercearia.models.Pessoa;
 import br.com.dforlani.mercearia.models.Produto;
 import br.com.dforlani.mercearia.repositorios.CidadeRepositorio;
 import br.com.dforlani.mercearia.repositorios.DepartamentoRepositorio;
+import br.com.dforlani.mercearia.repositorios.PedidoItemRepositorio;
 import br.com.dforlani.mercearia.repositorios.PedidoRepositorio;
 import br.com.dforlani.mercearia.repositorios.PessoaRepositorio;
 import br.com.dforlani.mercearia.repositorios.ProdutoRepositorio;
@@ -39,6 +43,8 @@ public class PopulacaoInicialBanco implements CommandLineRunner {
 	private ProdutoRepositorio produtoRep;
 	@Autowired
 	private PedidoRepositorio pedidoRep;
+	@Autowired
+	private PedidoItemRepositorio pedidoItemRep;
 	
 	@Override
 	public void run(String... args) throws Exception {
@@ -86,34 +92,53 @@ public class PopulacaoInicialBanco implements CommandLineRunner {
 		pessoaRepo.save(p2);
 
 		//INCLUSÃO AUTOMÁTICA DE PRODUTOS 
-		Produto prodAux = new Produto("Coca-Cola", 1.89);
+		Produto prodAux = new Produto("Coca-Cola", new BigDecimal(1.89));
 		produtoRep.save(prodAux);
 
-		prodAux = new Produto("Farinha Anaconda", 6.98);
+		prodAux = new Produto("Farinha Anaconda", new BigDecimal(6.98));
 		produtoRep.save(prodAux);
 
-		prodAux = new Produto("Barra de Chocolate Nestlê", 7.02);
+		prodAux = new Produto("Barra de Chocolate Nestlê",new BigDecimal( 7.02));
 		produtoRep.save(prodAux);
 
-		prodAux = new Produto("Sabonete", 2.35);
+		prodAux = new Produto("Sabonete", new BigDecimal(2.35));
 		produtoRep.save(prodAux);
 		produtoRep.flush();
 		
 
-		//INCLUSÃO AUTOMÁTICA DE PEDIDOS 
-		Pedido pedido = new Pedido(LocalDate.of(1990, 12, 1));
-		// pedido.setItens(produtoRep.findAll());
+	
+		//PEDIDO 1
+		Pedido pedido = new Pedido(LocalDateTime.of(1990, 12, 1, 9, 10, 55));	
+		pedido.setPessoa(p2);			
 		pedidoRep.save(pedido);
+		//INCLUSÃO DE ITEM
+		PedidoItem item1 = new PedidoItem();
+		item1.setPedido(pedido);
+		item1.setProduto(produtoRep.findAll().get(0));
+		item1.setQuantidade(4);
+		pedidoItemRep.save(item1);
 
-		pedido = new Pedido(LocalDate.of(2020, 2, 4));
-		// pedido.setItens(produtoRep.findAll());
+		//PEDIDO 2
+		pedido = new Pedido(LocalDateTime.of(2020, 2, 4, 15, 6, 7));	
+		pedido.setPessoa(p1);		
 		pedidoRep.save(pedido);
+		//INCLUSÃO DE ITEM 2
+		PedidoItem item2 = new PedidoItem();
+		item2.setPedido(pedido);
+		item2.setProduto(produtoRep.findAll().get(0));
+		item2.setQuantidade(10);
+		pedidoItemRep.save(item2);
 
-		pedido = new Pedido(LocalDate.of(2018, 4, 5));
-		// pedido.setItens(produtoRep.findAll());
+		//PEDIDO 3
+		pedido = new Pedido(LocalDateTime.of(2018, 4, 5, 5, 8, 9));	
+		pedido.setPessoa(p1);			
 		pedidoRep.save(pedido);
-
-		// pedidoRep.flush();
+		//INCLUSÃO DE ITEM 3
+		PedidoItem item3 = new PedidoItem();
+		item3.setPedido(pedido);
+		item3.setProduto(produtoRep.findAll().get(0));
+		item3.setQuantidade(10);		
+		pedidoItemRep.save(item3);
 
 
 

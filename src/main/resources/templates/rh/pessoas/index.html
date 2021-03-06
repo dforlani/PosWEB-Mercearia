@@ -1,16 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>Sistema de Gestão de Mercearia</title>
 
-<link rel="stylesheet"
-	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-	integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
-	crossorigin="anonymous">
+<head>
+	<meta charset="UTF-8">
+	<title>Sistema de Gestão de Mercearia</title>
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+		integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
 </head>
+<script>
+	$(function () {
+
+		$(".callConfirm").on("click", function (e) {
+			if (!confirm("Deseja realmente remover esse item?")) {
+				e.preventDefault();
+			}
+		});
+	});
+</script>
+
 <body>
+	<div th:replace="fragments/header :: header"></div>
 	<div class="container my-2">
 		<a th:href="@{/rh/pessoas/nova}" class="btn btn-primary btn-sm mb-3">Incluir Pessoa</a>
 		<h1>Pessoas</h1>
@@ -30,11 +41,13 @@
 					<td th:text="${pessoa.email}"></td>
 					<td>
 						<a th:href="@{/rh/pessoas/{id}(id=${pessoa.id})}" class="btn btn-primary">Alterar</a>
-						<a th:href="@{/rh/pessoas/excluir/{id}(id=${pessoa.id})}" class="btn btn-danger">Excluir</a>			
+						<a th:href="@{/rh/pessoas/excluir/{id}(id=${pessoa.id})}"
+							class="btn btn-danger callConfirm">Excluir</a>
 					</td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
 </body>
+
 </html>

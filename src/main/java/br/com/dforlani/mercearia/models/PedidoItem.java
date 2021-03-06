@@ -7,13 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "pedido_item")
@@ -22,7 +17,6 @@ public class PedidoItem {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotBlank
     private int quantidade;
 
  
@@ -34,7 +28,6 @@ public class PedidoItem {
     @JoinColumn(name = "pedido_id")
     private Pedido pedido;
 
-    private BigDecimal valor_venda;
 
     public Long getId() {
         return id;
@@ -53,17 +46,12 @@ public class PedidoItem {
         this.quantidade = quantidade;
     }
 
-    public BigDecimal getValor_venda() {
-        return valor_venda;
-    }
 
-    public void setValor_venda(BigDecimal valor_venda) {
-        this.valor_venda = valor_venda;
-    }
 
-    public PedidoItem(@NotBlank int quantidade, BigDecimal valor_venda) {
+
+    public PedidoItem( int quantidade) {
         this.quantidade = quantidade;
-        this.valor_venda = valor_venda;
+      
     }
 
     @Deprecated
@@ -112,15 +100,23 @@ public class PedidoItem {
         this.produto = produto;
     }
 
-    public PedidoItem(@NotBlank int quantidade, Produto produto, Pedido pedido, BigDecimal valor_venda) {
+    public PedidoItem(int quantidade, Produto produto, Pedido pedido) {
         this.quantidade = quantidade;
         this.produto = produto;
         this.pedido = pedido;
-        this.valor_venda = valor_venda;
+   
     }
 
     public PedidoItem(Pedido pedido) {
         this.pedido = pedido;
+
     }
+
+    public String getNomeProduto() {
+		if (produto != null) {
+			return produto.getNome();
+		}
+		return "";
+	}
 
 }

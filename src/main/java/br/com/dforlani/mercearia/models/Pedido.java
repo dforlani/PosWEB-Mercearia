@@ -1,6 +1,7 @@
 package br.com.dforlani.mercearia.models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,28 +29,30 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate data;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime data;
 
     @ManyToOne
     private Pessoa pessoa;
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "pedido_item",
-        joinColumns = @JoinColumn(name = "pedido_id"),
-        inverseJoinColumns =  @JoinColumn(name = "produto_id")
-    )
-    private List<Produto> itens = new ArrayList<>();
+    // @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    // @JoinTable(
+    // name = "pedido_item",
+    // joinColumns = @JoinColumn(name = "pedido_id"),
+    // inverseJoinColumns = @JoinColumn(name = "produto_id")
+    // )
+    @OneToMany
+    @JoinColumn(name = "pedido_id")
+    private List<PedidoItem> itens = new ArrayList<>();
 
     @Deprecated
     public Pedido() {
 
     }
 
-    public Pedido(LocalDate data) {
+    public Pedido(LocalDateTime data) {
         this.data = data;
-   
+
     }
 
     public Long getId() {
@@ -60,14 +63,13 @@ public class Pedido {
         this.id = id;
     }
 
-    public LocalDate getData() {
+    public LocalDateTime getData() {
         return data;
     }
 
-    public void setData(LocalDate data) {
+    public void setData(LocalDateTime data) {
         this.data = data;
     }
-
 
     @Override
     public int hashCode() {
@@ -102,18 +104,18 @@ public class Pedido {
         this.pessoa = pessoa;
     }
 
-    public String getNomePessoa() {
-		if (pessoa != null) {
-			return pessoa.getNome();
-		}
-		return "";
-	}
+    public String getNomePessoa() {        
+        if (pessoa != null) {
+            return pessoa.getNome();
+        }
+        return "";
+    }
 
-    public List<Produto> getItens() {
+    public List<PedidoItem> getItens() {
         return itens;
     }
 
-    public void setItens(List<Produto> itens) {
+    public void setItens(List<PedidoItem> itens) {
         this.itens = itens;
     }
 

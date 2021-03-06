@@ -1,5 +1,7 @@
 package br.com.dforlani.mercearia.models;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,7 +22,7 @@ public class Produto {
     // @NotBlank(message = "O campo valor não pode ser vazio")
     // @NegativeOrZero(message = "O campo valor não pode ser zero ou negativo")
     @Column(nullable = false)
-    private Double valor;
+    private BigDecimal valor;
 
     public Long getId() {
         return id;
@@ -38,11 +40,11 @@ public class Produto {
         this.nome = nome;
     }
 
-    public Double getValor() {
+    public BigDecimal getValor() {
         return valor;
     }
 
-    public void setValor(Double valor) {
+    public void setValor(BigDecimal valor) {
         this.valor = valor;
     }
 
@@ -52,7 +54,7 @@ public class Produto {
     }
 
     public Produto(@NotBlank(message = "O campo nome do produto não pode ser vazio") String nome,
-            @NotBlank(message = "O campo valor não pode ser vazio") Double valor) {
+            @NotBlank(message = "O campo valor não pode ser vazio") BigDecimal valor) {
         this.nome = nome;
         this.valor = valor;
     }
