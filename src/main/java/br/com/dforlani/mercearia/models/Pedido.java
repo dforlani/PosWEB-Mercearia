@@ -35,14 +35,13 @@ public class Pedido {
     @ManyToOne
     private Pessoa pessoa;
 
-    // @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    // @JoinTable(
-    // name = "pedido_item",
-    // joinColumns = @JoinColumn(name = "pedido_id"),
-    // inverseJoinColumns = @JoinColumn(name = "produto_id")
-    // )
-    @OneToMany
-    @JoinColumn(name = "pedido_id")
+    @OneToMany(
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        mappedBy = "pedido",
+        fetch = FetchType.LAZY
+    )
+    // @JoinColumn(name = "pedido_id")
     private List<PedidoItem> itens = new ArrayList<>();
 
     @Deprecated
